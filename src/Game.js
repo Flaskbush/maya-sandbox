@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 // ==== Core ====
 import { createScene } from './core/Scene.js';
-import { createCamera } from './core/Camera.js';
+import { createPerspectiveCamera } from './core/Camera.js';
 import { createRenderer } from './core/Renderer.js';
-
+import { FirstPersonCamera } from './core/FirstPersonCamera.js';
 // ==== Helpers ====
 import { axesHelper } from './core/Helpers.js';
 import { gridHelper } from './core/Helpers.js';
@@ -15,9 +15,6 @@ import { Sphere } from './entities/Sphere.js';
 
 // ==== Game Loop ====
 import { startGameLoop } from './core/GameLoop.js';
-import { float } from 'three/tsl';
-
-
 
 export class Game {
   constructor() {
@@ -26,11 +23,19 @@ export class Game {
 
     this.scene = createScene();
     this.renderer = createRenderer(this.width, this.height);
+    this.lastTime = 0;
 
     // Camera and OrbitControls
+
+/*  ==== Perspective Camera ====  
     const { camera, controls } = createCamera(this.width, this.height, this.renderer.domElement );
     this.camera = camera;
     this.controls = controls;
+
+*/
+    // ==== First Person Camera ====
+    this.camera = createPerspectiveCamera(this.width, this.height);
+    this.cameraController = new FirstPersonCamera(this.camera, this.renderer.domElement);
 
     this.entities = [];
     this.helpers = [];
@@ -56,7 +61,11 @@ export class Game {
   }
 
   initSphereMesh() {
-    const sphere = new Sphere();
+    const sphere = new Sphere({
+      orbitSpeed: 1,
+      bounceSpeed: 2,
+      bounceHeight: 0.5,
+    });
     this.scene.add(sphere.mesh);
     this.entities.push(sphere);
   }
@@ -119,15 +128,21 @@ export class Game {
   }
 
   update(time) {
+    const delta = (time - this.lastTime) * 0.001;
+    this.lastTime = time;
+
     for (const entity of this.entities) {
-      entity.update(time);
+      entity.update(delta);
     }
 
+    this.cameraController.update(delta);
+/*
     if (this.controls) {
       this.controls.update();
     }
+*/ 
+      console.log(delta);   
   }
-
   render() {
     this.renderer.render(this.scene, this.camera);
   }

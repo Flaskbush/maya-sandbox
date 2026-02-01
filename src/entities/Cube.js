@@ -1,42 +1,37 @@
 import * as THREE from 'three';
 
 export class Cube {
-  constructor( {
+  constructor({
     position = new THREE.Vector3(),
     floating = false,
     floatSpeed = 1,
     floatAmplitude = 0.2,
-    spinSpeed = 1
+    rotationSpeed = 1
   } = {}) {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshNormalMaterial();
 
     this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.position.copy(position)
+    this.mesh.position.copy(position);
 
-    // floating config
+    // Floating / spinning
     this.floating = floating;
     this.floatSpeed = floatSpeed;
     this.floatAmplitude = floatAmplitude;
-    this.spinSpeed = spinSpeed;
+    this.rotationSpeed = rotationSpeed;
+
     this.baseY = position.y;
-  }
-  update(time) {
-    if (!this.floating) return;
-
-    const t = time * 0.001;
-    
-    this.mesh.position.y =
-      this.baseY + Math.sin(time * 0.001 * this.floatSpeed) * this.floatAmplitude;
-
-    
-    this.mesh.rotation.x = t * this.spinSpeed;
-    this.mesh.rotation.y = t * this.spinSpeed * 1.3;
+    this.phase = 0; 
   }
 
-  // update(time) {
-  //   this.mesh.position.y = Math.abs(Math.sin(time / 500)) * 0.2;
-  //   this.mesh.rotation.x = time / 2000;
-  //   this.mesh.rotation.y = time / 1000;
-  // }
+  update(delta) {
+    if (!this.floating) return 
+      this.phase += delta * this.floatSpeed;
+
+      this.mesh.position.y =
+        this.baseY + Math.sin(this.phase) * this.floatAmplitude;
+
+      this.mesh.rotation.y += delta * this.rotationSpeed;
+      this.mesh.rotation.x += delta * this.rotationSpeed * 0.5;
+  }
 }
