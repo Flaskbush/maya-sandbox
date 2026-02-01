@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 // ==== Core ====
 import { createScene } from './core/Scene.js';
 import { createCamera } from './core/Camera.js';
@@ -34,7 +35,9 @@ export class Game {
 
     this.initCubeMesh();
     this.initGroundMesh();
-    this.initHelper()
+    this.initHelpers()
+
+    this.bindInputs();
     this.start();
 
     window.addEventListener('resize', () => this.onResize());
@@ -52,11 +55,37 @@ export class Game {
     this.entities.push(ground);
   }
 
-  initHelper() {
-    this.scene.add(this.axesHelper = axesHelper(0.5));
-    this.helpers.push(this.axesHelper);
-    this.scene.add(this.gridHelper = gridHelper(10, 10));
-    this.helpers.push(this.gridHelper);
+  initHelpers() {
+    this.helpersGroup = new THREE.Group();
+
+    const axes = axesHelper(0.5);
+    const grid = gridHelper(30, 30);
+
+    this.helpersGroup.add(axes);
+    this.helpersGroup.add(grid);
+
+    this.scene.add(this.helpersGroup);
+
+    this.helpers.push(axes, grid);
+
+    this.helpersGroup.visible = false;
+    // this.scene.add(this.axesHelper = axesHelper(0.5));
+    // this.helpers.push(this.axesHelper);
+    // this.scene.add(this.gridHelper = gridHelper(30, 30));
+    // this.helpers.push(this.gridHelper);
+  }
+
+  toggleHelpers() {
+    if (!this.helpersGroup) return;
+    this.helpersGroup.visible = !this.helpersGroup.visible;
+  }
+
+  bindInputs() {
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'h') {
+        this.toggleHelpers();
+      }
+    });
   }
 
   update(time) {

@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 export class Ground {
     constructor() {
-        const geometry = new THREE.PlaneGeometry(10, 10);
-        const material = new THREE.MeshStandardMaterial({ color: 0x808080, side: THREE.DoubleSide });
+        const geometry = new THREE.PlaneGeometry(30, 30);
+        const material = new THREE.MeshStandardMaterial({ color: 0x9A9395, side: THREE.DoubleSide });
 
         this.mesh = new THREE.Mesh(geometry, material);
 
