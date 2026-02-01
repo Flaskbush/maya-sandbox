@@ -11,9 +11,11 @@ import { gridHelper } from './core/Helpers.js';
 // ==== Entities ====
 import { Cube } from './entities/Cube.js';
 import { Ground } from './entities/Ground.js';
+import { Sphere } from './entities/Sphere.js';
 
 // ==== Game Loop ====
 import { startGameLoop } from './core/GameLoop.js';
+import { float } from 'three/tsl';
 
 
 
@@ -35,6 +37,7 @@ export class Game {
 
     this.initCubeMesh();
     this.initGroundMesh();
+    this.initSphereMesh();
     this.initHelpers()
 
     this.bindInputs();
@@ -43,10 +46,39 @@ export class Game {
     window.addEventListener('resize', () => this.onResize());
   }
 
-  initCubeMesh() {
-    const cube = new Cube();
+  // ==== Entity Initializations ====
+
+  spawnCube(options) {
+    const cube = new Cube(options);
     this.scene.add(cube.mesh);
     this.entities.push(cube);
+    return cube;
+  }
+
+  initSphereMesh() {
+    const sphere = new Sphere();
+    this.scene.add(sphere.mesh);
+    this.entities.push(sphere);
+  }
+
+  initCubeMesh() {
+    // Floating Cube
+    this.spawnCube({
+      position: new THREE.Vector3(0, 1.5, 0),
+      floating: true,
+      floatSpeed: 1,
+      floatAmplitude: 0.3
+    });
+
+    // Grounded Cube
+    this.spawnCube({
+      position: new THREE.Vector3(2, 0.5, 0),
+    });
+
+    // const cube1 = new Cube();
+    // const cube2 = new Cube(new THREE.Vector3(2, 0, 0));
+    // this.scene.add(cube1.mesh, cube2.mesh);
+    // this.entities.push(cube1, cube2);
   }
 
   initGroundMesh() {
@@ -55,6 +87,7 @@ export class Game {
     this.entities.push(ground);
   }
 
+  // ==== Helpers Initializations ====
   initHelpers() {
     this.helpersGroup = new THREE.Group();
 
@@ -69,10 +102,6 @@ export class Game {
     this.helpers.push(axes, grid);
 
     this.helpersGroup.visible = false;
-    // this.scene.add(this.axesHelper = axesHelper(0.5));
-    // this.helpers.push(this.axesHelper);
-    // this.scene.add(this.gridHelper = gridHelper(30, 30));
-    // this.helpers.push(this.gridHelper);
   }
 
   toggleHelpers() {
@@ -80,6 +109,7 @@ export class Game {
     this.helpersGroup.visible = !this.helpersGroup.visible;
   }
 
+  // ==== Game Loop Methods ====
   bindInputs() {
     window.addEventListener('keydown', (event) => {
       if (event.key === 'h') {
