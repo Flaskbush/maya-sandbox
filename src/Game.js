@@ -141,7 +141,7 @@ export class Game {
       this.controls.update();
     }
 */ 
-      console.log(delta);   
+      //console.log(delta);   
   }
   render() {
     this.renderer.render(this.scene, this.camera);

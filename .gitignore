@@ -28,7 +28,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-todo.md
+Todo.md
 
 # Optional: temporary files
 *.tmp

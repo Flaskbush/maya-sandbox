@@ -8,6 +8,6 @@ export function createPerspectiveCamera(width, height) {
     1000
   );
 
-  camera.position.set(0, 0.4, 1);
+  //camera.position.set(0.4, 0.4, 1);
   return camera;
 }
