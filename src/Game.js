@@ -4,6 +4,9 @@ import { createScene } from './core/Scene.js';
 import { createPerspectiveCamera } from './core/Camera.js';
 import { createRenderer } from './core/Renderer.js';
 import { FirstPersonCamera } from './core/FirstPersonCamera.js';
+import { CapsulePlayer } from './core/CapsulePlayer.js';
+
+
 // ==== Helpers ====
 import { axesHelper } from './core/Helpers.js';
 import { gridHelper } from './core/Helpers.js';
@@ -36,6 +39,11 @@ export class Game {
     // ==== First Person Camera ====
     this.camera = createPerspectiveCamera(this.width, this.height);
     this.cameraController = new FirstPersonCamera(this.camera, this.renderer.domElement);
+
+    // ==== Player ====
+    this.player = new CapsulePlayer({
+      position: new THREE.Vector3(0, 2, 0),
+    });
 
     this.entities = [];
     this.helpers = [];
@@ -131,18 +139,49 @@ export class Game {
     const delta = (time - this.lastTime) * 0.001;
     this.lastTime = time;
 
+    // ???? Update Entities
     for (const entity of this.entities) {
       entity.update(delta);
     }
 
+    // Camera input
     this.cameraController.update(delta);
-/*
-    if (this.controls) {
-      this.controls.update();
+      //console.log(delta);
+
+    // Apply camera position to player position
+    const move = this.cameraController.moveDirection;
+    const speed = this.cameraController.moveSpeed;
+
+    const foward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+    const right   = new THREE.Vector3(1, 0, 0).applyQuaternion(this.camera.quaternion);
+
+    foward.y = 0;
+    right.y = 0;
+    foward.normalize();
+    right.normalize();
+
+    // Update player velocity based on input
+    this.player.velocity.x =
+      (foward.x * move.z + right.x * move.x) * speed;
+
+    this.player.velocity.z =
+      (foward.z * move.z + right.z * move.x) * speed;
+
+    // Update player physics
+    this.player.updatePhysics(delta);
+    
+    // Simple ground collision
+    const groundY = 0;
+    if (this.player.bottom <= groundY) {
+      this.player.snapToGround(groundY);
+    } else {
+      this.player.isGrounded = false;
     }
-*/ 
-      //console.log(delta);   
+
+    // Sync camera position to player position
+    this.camera.position.copy(this.player.position);
   }
+
   render() {
     this.renderer.render(this.scene, this.camera);
   }

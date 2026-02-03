@@ -13,32 +13,34 @@ export class FirstPersonCamera {
     this.theta = 0; // pitch
 
     // ===== Movement =====
-    this.velocity = new THREE.Vector3();
-    this.direction = new THREE.Vector3();
+    // this.velocity = new THREE.Vector3();
+    // this.direction = new THREE.Vector3();
 
     // ===== Config =====
     this.moveSpeed = 6;
     this.sprintMultiplier = 1.7;
-    this.jumpStrength = 8;
-    this.gravity = 20;
-    this.eyeHeight = 0.4;
+    // this.jumpStrength = 8;
+    // this.gravity = 20;
+    // this.eyeHeight = 0.4;
 
     // ===== State =====
-    this.isGrounded = true;
+    // this.isGrounded = true;
 
-    this.camera.position.y = this.eyeHeight;
+    // this.camera.position.y = this.eyeHeight;
+
+    this.moveDirection = new THREE.Vector3();
   }
 
   update(delta) {
     this.updateRotation(delta);
-    this.updateMovement(delta);
+    this.updateMovementIntent(delta);
     this.input.update();
   }
 
   // =========================
   // Mouse Look
   // =========================
-  updateRotation(delta) {
+  updateRotation() {
     const sensitivity = 0.002;
 
     this.phi   -= this.input.current_.mouseXDelta * sensitivity;
@@ -58,18 +60,22 @@ export class FirstPersonCamera {
   // =========================
   // WASD + Jump + Gravity
   // =========================
-  updateMovement(delta) {
+  updateMovementIntent() {
     const keys = this.input.current_.keys;
 
     // ----- Input direction -----
-    this.direction.set(0, 0, 0);
-    if (keys['KeyW']) this.direction.z += 1;
-    if (keys['KeyS']) this.direction.z -= 1;
-    if (keys['KeyA']) this.direction.x -= 1;
-    if (keys['KeyD']) this.direction.x += 1;
+    this.moveDirection.set(0, 0, 0);
 
-    this.direction.normalize();
+    if (keys['KeyW']) this.moveDirection.z += 1;
+    if (keys['KeyS']) this.moveDirection.z -= 1;
+    if (keys['KeyA']) this.moveDirection.x -= 1;
+    if (keys['KeyD']) this.moveDirection.x += 1;
 
+    this.moveDirection.normalize();
+
+  }
+}
+/*
     // ----- Speed -----
     let speed = this.moveSpeed;
     if (keys['ShiftLeft']) speed *= this.sprintMultiplier;
@@ -110,6 +116,8 @@ export class FirstPersonCamera {
     }
   }
 }
+*/
+
 
 /*
 import * as THREE from 'three';
